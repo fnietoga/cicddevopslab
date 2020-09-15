@@ -59,10 +59,71 @@ Probaremos la opciones de la aplicación:
 
 
 # Ejercicio 2: Integración Continua con Azure DevOps
+Abre una nueva pestaña del navegador para visitar [Azure DevOps](https://dev.azure.com), y a continuación inicia sesión en tu cuenta.  
 
-## Crear organizacion en Azure DevOps 
+Si es la primera vez que inicias sesion con esa cuenta, Azure DevOps te guiará a través de un asistente:
+- Confirma tu informacion de contacto y selecciona "Siguiente"
+- Selecciona "Continuar" para crear una nueva cuenta en Azure DevOps
+- Introduce el nombre que deseas para tu nueva Organización y selecciona "Continuar"
 
-## Subir código a repositorio Git
+De lo contrario, puedes crear una nueva organizacion utilizando el enlace "Nueva Organizacion", o trabajar sobre una de tus organizaciones ya existentes.  
+![screen]()
+
+Si hemos creado una nueva organización nos mostrará automáticamente las opciones para la creación del primero proyecto.  
+![screen]()
+
+Si hemos seleccionado una organización ya existente, tendremos que hacer uso del botón "Nuevo Proyecto" que se nos muestra en la parte superior derecha.  
+
+Especificaremos el nombre, descripción (opcional) y seleccionaremos la metodología que utilizaremos en nuestro nuevo proyecto para la gestión de tareas. Podemos dejar los valores por defecto para el ámbito de este laboratorio.  
+![screen]()
+
+En nuestro nuevo proyecto encontraremos varios opciones, en el menú situado en el lado izquierdo, y una de ellas es la relacionada con los repositorios de código (Repos).  
+Comprobaremos que se ha creado de forma automática un repositorio de código con el mismo nombre del proyecto, y desplegando en la parte superior tendremos la posibilidad de crear otros repositorios. Para este laboratorio haremos uso del creado por defecto.  
+![screen]()
+
+La primera acción que tenemos que realizar sobre nuestro proyecto de DevOps en subir el código fuente de la aplicación que actualmente tenemos en nuestra maquina de trabajo. Para ello realizaremos la siguientes acciones:  
+
+1. Nos posicionaremos en la carpeta raiz de nuestro proyecto (netcoredevops), ejecutando 
+```
+cd ..
+```
+![screen]()  
+
+2. Configuraremos nuestro entorno local de git
+```
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+git config --global credential.helper cache
+```
+
+3. Inicializaremos un repositorio git local
+```
+git init
+```
+
+4. Añadiremos a nuestro repositorio local todo el contenido de nuestra carpeta local
+```
+git add .
+git commit -m "Initial Commit"
+```
+
+5. Configuraremos el repositorio remoto de git, apuntando al repositorio en nuestro proyecto de Azure DevOps
+Primero copiaremos la URL de nuestro repositorio
+![screen]()  
+
+Y ejecutaremos el siguiente comando para configurarlo como repositorio remoto.
+```
+git branch -M master
+git remote add origin https://[UserName]@dev.azure.com/[OrganizationName]/netcore_devops/_git/netcore_devops
+```
+
+6. Subiremos todos los cambios al repositorio remoto
+```
+git push -u origin master
+```
+
+7. Por ultimo, comprobaremos a través del navegador que los ficheros se han subido correctamente a nuestro repositorio en DevOps.
+![screen]()  
 
 ## Editor clásico de pipelines
 
