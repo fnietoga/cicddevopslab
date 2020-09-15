@@ -66,20 +66,20 @@ Si es la primera vez que inicias sesion con esa cuenta, Azure DevOps te guiará 
 - Selecciona "Continuar" para crear una nueva cuenta en Azure DevOps
 - Introduce el nombre que deseas para tu nueva Organización y selecciona "Continuar"
 
-De lo contrario, puedes crear una nueva organizacion utilizando el enlace "Nueva Organizacion", o trabajar sobre una de tus organizaciones ya existentes.  
-![screen]()
+De lo contrario, puedes crear una nueva organizacion utilizando el enlace "Nueva Organizacion", en la parte superior izquierda, o trabajar sobre una de tus organizaciones ya existentes.  
+![screen](https://user-images.githubusercontent.com/4158659/93192213-b6ce5100-f745-11ea-9604-bea1f89d7cbd.png)
 
 Si hemos creado una nueva organización nos mostrará automáticamente las opciones para la creación del primero proyecto.  
-![screen]()
+![screen](https://user-images.githubusercontent.com/4158659/93192382-eaa97680-f745-11ea-92f1-20efffb2b07a.png)
 
 Si hemos seleccionado una organización ya existente, tendremos que hacer uso del botón "Nuevo Proyecto" que se nos muestra en la parte superior derecha.  
 
 Especificaremos el nombre, descripción (opcional) y seleccionaremos la metodología que utilizaremos en nuestro nuevo proyecto para la gestión de tareas. Podemos dejar los valores por defecto para el ámbito de este laboratorio.  
-![screen]()
+![screen](https://user-images.githubusercontent.com/4158659/93192436-f9902900-f745-11ea-9e57-47fbfa68801b.png)
 
 En nuestro nuevo proyecto encontraremos varios opciones, en el menú situado en el lado izquierdo, y una de ellas es la relacionada con los repositorios de código (Repos).  
 Comprobaremos que se ha creado de forma automática un repositorio de código con el mismo nombre del proyecto, y desplegando en la parte superior tendremos la posibilidad de crear otros repositorios. Para este laboratorio haremos uso del creado por defecto.  
-![screen]()
+![screen](https://user-images.githubusercontent.com/4158659/93192491-06148180-f746-11ea-8e17-c4a668169919.png)
 
 La primera acción que tenemos que realizar sobre nuestro proyecto de DevOps en subir el código fuente de la aplicación que actualmente tenemos en nuestra maquina de trabajo. Para ello realizaremos la siguientes acciones:  
 
@@ -87,7 +87,7 @@ La primera acción que tenemos que realizar sobre nuestro proyecto de DevOps en 
 ```
 cd ..
 ```
-![screen]()  
+![screen](https://user-images.githubusercontent.com/4158659/93192580-1c224200-f746-11ea-9313-49a6dff6bf6c.png)  
 
 2. Configuraremos nuestro entorno local de git
 ```
@@ -95,6 +95,7 @@ git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 git config --global credential.helper cache
 ```
+![screen](https://user-images.githubusercontent.com/4158659/93192638-2c3a2180-f746-11ea-82f6-600b998f4068.png)
 
 3. Inicializaremos un repositorio git local
 ```
@@ -109,7 +110,7 @@ git commit -m "Initial Commit"
 
 5. Configuraremos el repositorio remoto de git, apuntando al repositorio en nuestro proyecto de Azure DevOps
 Primero copiaremos la URL de nuestro repositorio
-![screen]()  
+![screen](https://user-images.githubusercontent.com/4158659/93192713-4116b500-f746-11ea-9b6a-9cbf44146dbd.png)  
 
 Y ejecutaremos el siguiente comando para configurarlo como repositorio remoto.
 ```
@@ -123,7 +124,7 @@ git push -u origin master
 ```
 
 7. Por ultimo, comprobaremos a través del navegador que los ficheros se han subido correctamente a nuestro repositorio en DevOps.
-![screen]()  
+![screen](https://user-images.githubusercontent.com/4158659/93192756-4d9b0d80-f746-11ea-87da-70fe654c691d.png)  
 
 ## Editor clásico de pipelines
 
