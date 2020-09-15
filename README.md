@@ -20,6 +20,9 @@ Esta aplicación permite monitorizar en tiempo real los recursos de CPU y memori
    - [Visual Studio Code](https://code.visualstudio.com/download) o cualquier otro IDE o editor.
 
 # Ejercicio 1: Ejecutar localmente
+
+**Duracion**: XX minutes
+
 Como primer ejercicio probaremos a ejecutar la aplicación de forma local, para comprobar su correcto funcionamiento y familiarizarnos con la la funcionalidad que nos ofrece.
 
 Para ello nos descargaremos el codigo fuente desde el repositorio de referencia de este laboratorio, ejecutando el siguiente comando.
@@ -57,9 +60,15 @@ Probaremos la opciones de la aplicación:
 - **'Tools'** - Algunas herramientas útiles en demos, como la carga forzada de CPU, y las páginas de error/excepción para su uso con App Insights u otra herramienta de monitorización.
 - **'Monitoring'** - Muestra la carga de la CPU y memoria en tiempo real en formato gráfico, obtenidos utilizando una API REST (/api/monitoringdata)y mostrados utilizando chart.js. Recomendable abrirlo en una pestaña adicional del navegador para poder observar en tiempo real la carga generada utilizando las herramientas anteriores.
 
-
 # Ejercicio 2: Integración Continua con Azure DevOps
-Abre una nueva pestaña del navegador para visitar [Azure DevOps](https://dev.azure.com), y a continuación inicia sesión en tu cuenta.  
+
+**Duracion**: XX minutes
+
+El propósito de este ejercicio es familiarizarnos con las principales opciones de Azure DevOps y preparar el entorno para qie se realice un proceso de compilacion de forma automática cada vez que se sube un cambio en el codigo fuente por algun desarrollador.
+
+### Tarea 1: Crear proyecto y subir código fuente
+
+Para comenzar abre una nueva pestaña del navegador para visitar [Azure DevOps](https://dev.azure.com), y a continuación inicia sesión en tu cuenta.  
 
 Si es la primera vez que inicias sesion con esa cuenta, Azure DevOps te guiará a través de un asistente:
 - Confirma tu informacion de contacto y selecciona "Siguiente"
@@ -67,75 +76,113 @@ Si es la primera vez que inicias sesion con esa cuenta, Azure DevOps te guiará 
 - Introduce el nombre que deseas para tu nueva Organización y selecciona "Continuar"
 
 De lo contrario, puedes crear una nueva organizacion utilizando el enlace "Nueva Organizacion", en la parte superior izquierda, o trabajar sobre una de tus organizaciones ya existentes.  
-![screen](https://user-images.githubusercontent.com/4158659/93192213-b6ce5100-f745-11ea-9604-bea1f89d7cbd.png)
+   ![screen](https://user-images.githubusercontent.com/4158659/93192213-b6ce5100-f745-11ea-9604-bea1f89d7cbd.png)
 
 Si hemos creado una nueva organización nos mostrará automáticamente las opciones para la creación del primero proyecto.  
-![screen](https://user-images.githubusercontent.com/4158659/93192382-eaa97680-f745-11ea-92f1-20efffb2b07a.png)
+   ![screen](https://user-images.githubusercontent.com/4158659/93192382-eaa97680-f745-11ea-92f1-20efffb2b07a.png)
 
 Si hemos seleccionado una organización ya existente, tendremos que hacer uso del botón "Nuevo Proyecto" que se nos muestra en la parte superior derecha.  
 
 Especificaremos el nombre, descripción (opcional) y seleccionaremos la metodología que utilizaremos en nuestro nuevo proyecto para la gestión de tareas. Podemos dejar los valores por defecto para el ámbito de este laboratorio.  
-![screen](https://user-images.githubusercontent.com/4158659/93192436-f9902900-f745-11ea-9e57-47fbfa68801b.png)
+   ![screen](https://user-images.githubusercontent.com/4158659/93192436-f9902900-f745-11ea-9e57-47fbfa68801b.png)
 
 En nuestro nuevo proyecto encontraremos varios opciones, en el menú situado en el lado izquierdo, y una de ellas es la relacionada con los repositorios de código (Repos).  
 Comprobaremos que se ha creado de forma automática un repositorio de código con el mismo nombre del proyecto, y desplegando en la parte superior tendremos la posibilidad de crear otros repositorios. Para este laboratorio haremos uso del creado por defecto.  
-![screen](https://user-images.githubusercontent.com/4158659/93192491-06148180-f746-11ea-8e17-c4a668169919.png)
+   ![screen](https://user-images.githubusercontent.com/4158659/93192491-06148180-f746-11ea-8e17-c4a668169919.png)
 
 La primera acción que tenemos que realizar sobre nuestro proyecto de DevOps en subir el código fuente de la aplicación que actualmente tenemos en nuestra maquina de trabajo. Para ello realizaremos la siguientes acciones:  
 
 1. Nos posicionaremos en la carpeta raiz de nuestro proyecto (netcoredevops), ejecutando 
-```
-cd ..
-```
-![screen](https://user-images.githubusercontent.com/4158659/93192580-1c224200-f746-11ea-9313-49a6dff6bf6c.png)  
+   ```
+   cd ..
+   ```
+   ![screen](https://user-images.githubusercontent.com/4158659/93192580-1c224200-f746-11ea-9313-49a6dff6bf6c.png)  
 
 2. Configuraremos nuestro entorno local de git
-```
-git config --global user.email "you@example.com"
-git config --global user.name "Your Name"
-git config --global credential.helper cache
-```
-![screen](https://user-images.githubusercontent.com/4158659/93192638-2c3a2180-f746-11ea-82f6-600b998f4068.png)
+   ```
+   git config --global user.email "you@example.com"
+   git config --global user.name "Your Name"
+   git config --global credential.helper cache
+   ```
+   ![screen](https://user-images.githubusercontent.com/4158659/93192638-2c3a2180-f746-11ea-82f6-600b998f4068.png)
 
 3. Inicializaremos un repositorio git local
-```
-git init
-```
+   ```
+   git init
+   ```
 
 4. Añadiremos a nuestro repositorio local todo el contenido de nuestra carpeta local
-```
-git add .
-git commit -m "Initial Commit"
-```
+   ```
+   git add .
+   git commit -m "Initial Commit"
+   ```
 
 5. Configuraremos el repositorio remoto de git, apuntando al repositorio en nuestro proyecto de Azure DevOps
 Primero copiaremos la URL de nuestro repositorio
-![screen](https://user-images.githubusercontent.com/4158659/93192713-4116b500-f746-11ea-9b6a-9cbf44146dbd.png)  
+   ![screen](https://user-images.githubusercontent.com/4158659/93192713-4116b500-f746-11ea-9b6a-9cbf44146dbd.png)  
 
 Y ejecutaremos el siguiente comando para configurarlo como repositorio remoto.
-```
-git branch -M master
-git remote add origin https://[UserName]@dev.azure.com/[OrganizationName]/netcore_devops/_git/netcore_devops
-```
+   ```
+   git branch -M master
+   git remote add origin https://[UserName]@dev.azure.com/[OrganizationName]/netcore_devops/_git/netcore_devops
+   ```
 
 6. Subiremos todos los cambios al repositorio remoto
-```
-git push -u origin master
-```
+   ```
+   git push -u origin master
+   ```
 
 7. Por ultimo, comprobaremos a través del navegador que los ficheros se han subido correctamente a nuestro repositorio en DevOps.
-![screen](https://user-images.githubusercontent.com/4158659/93192756-4d9b0d80-f746-11ea-87da-70fe654c691d.png)  
+   ![screen](https://user-images.githubusercontent.com/4158659/93192756-4d9b0d80-f746-11ea-87da-70fe654c691d.png)  
 
-## Editor clásico de pipelines
+### Tarea 2: Crear compilación con editor clásico
+Procederemos a crear una definicion de pipeline que nos permitirá compilar nuestra aplicacion y publicar un artefacto con el contenido de la aplicación listo para ser desplegado. Para ello seguiremos los siguientes pasos
 
-## Fichero de definición de pipeline
+1. En nuestro proyecto de Azure DevOps accederemos al apartado de Pipelines, y pulsaremos sobre el botón "Crear Pipeline"
+   ![screen](https://user-images.githubusercontent.com/4158659/93215009-2d7b4680-f766-11ea-8a98-cf3e9c025c44.png)
 
-## Probar integración continua
+2. Seleccionaremos utilizar el editor clásico, en el enlace de la parte inferior.
+   ![screen](https://user-images.githubusercontent.com/4158659/93215202-5ef41200-f766-11ea-8be4-fada77ca73f4.png)
 
-# Ejercicio 3: Desplegar infraestructura en Azure
+3. En la configuración del repositorio de codigo a utilizar, dejaremos la configuracion por defecto, y pulsaremos en el botón "Continuar"
+   ![screen](https://user-images.githubusercontent.com/4158659/93215584-e17cd180-f766-11ea-8aab-2671bae3e3ac.png)
 
-# Ejercicio 4: Despliegue Continuo desde Azure DevOps
+4. Buscaremos el template con nombre "ASP.NET Core", ya que es el que mas se asemeja a nuestra aplicacion web .Net Core.
+   ![screen](https://user-images.githubusercontent.com/4158659/93215763-29035d80-f767-11ea-8b11-2053b6674639.png)
 
-# Ejercicio 5: Habilitar Operación
+5. La pipeline creada sería perfectamente operativa, pero haremos algunos pequeños ajustes:
+   - Modificaremos el nombre del Agent Job por uno mas descriptivo, como "Build and Publish artifact"
+   - Modificaremos el nombre del artefacto publicado, sustituyendo el valor "drop" por el valor "demoapp" en el campo "Artifact name" de la tarea "Publish Artifact"
+   ![screen](https://user-images.githubusercontent.com/4158659/93216631-3ff67f80-f768-11ea-99fc-8ce846d94d9c.png)
 
-# Ejercicio 6: Habilitar Seguridad
+6. Pulsaremos sobre el boton "Save & queue", que grabará y pondrá en ejecución una instancia de nuestra definición de pipeline.
+   ![screen](https://user-images.githubusercontent.com/4158659/93216684-50a6f580-f768-11ea-8585-215ad37d5ec0.png)
+
+7. Pulsando sobre la pipeline en ejecucion podremos revisar el avance y visualizar los logs generados por cada una de las tareas
+   ![screen](https://user-images.githubusercontent.com/4158659/93216688-53094f80-f768-11ea-8fa0-1aad6153836f.png)
+
+8. Esperaremos a que finalice la ejecucion de la pipeline y comprobaremos que se ha generado un artefacto, que podremos descargarnos y visualizar su contenido.
+   ![screen](https://user-images.githubusercontent.com/4158659/93217212-040fea00-f769-11ea-8f33-92ba6f2d4cfa.png)
+
+### Tarea 3: Fichero de definición de pipeline
+En esta tarea crearemos la definición de nuestra pipeline haciendo uso de un fichero en formato YAML, que podremos guardar y versionar junto con el resto del codigo fuente de nuestra aplicación, en el repositorio Git.
+
+
+
+
+### Tarea 4: Probar integración continua
+
+
+# Ejercicio 3: Despliegue Continuo
+
+**Duracion**: XX minutes
+
+El propósito de este ejercicio es ampliar la definición del proceso de compilación para que de forma automática se despliegue en un entorno de pruebas, de forma automática, la versión de la aplicación que se genera tras el proceso de compilación.
+
+### Tarea 1: Desplegar infraestructura en Azure
+
+### Tarea 2: Despliegue Continuo desde Azure DevOps
+
+### Tarea 3: Habilitar Operación
+
+### Tarea 4: Habilitar Seguridad
