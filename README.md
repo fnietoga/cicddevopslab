@@ -363,7 +363,7 @@ En la nueva tarea, en el parámetro `Azure Resource Manager connection`, selecci
 <kbd>![ARM Connection authorize](https://user-images.githubusercontent.com/4158659/93871865-9c5d2000-fccf-11ea-9774-2f713c92b31c.png)</kbd>
 
 Este proceso generará de forma automática los siguientes elementos:
-- [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals). En el Azure Active Directory asociado a la suscripción seleccionada se creará un Service Principal al que se le asignarán los permisos necesarios sobre la suscripción para el despliegue de recursos. 
+- [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals). En el Azure Active Directory asociado a la suscripción seleccionada se creará un Service Principal al que se le asignarán el rol [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) sobre la suscripción para permitir el despliegue de recursos. 
 - [Azure DevOps Service Connection](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml). En el proyecto actual de Azure DevOps se creará una conexión y quedará configurada con los valores de la suscripción, y utilizando el Service Principal creado para la autenticación.
 
 Haremos unos pequeños ajustes a la conexión creada, para utilizar un nombre mas facil de recordar, y para permitir su uso por las distintas pipelines que creemos sin necesidad de autorizar expresamente.  
