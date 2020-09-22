@@ -479,3 +479,8 @@ Algunas opciones de interes del servicio son:
 - [Search](https://docs.microsoft.com/en-us/azure/azure-monitor/app/diagnostic-search): Permite buscar y explorar elementos de telemetría individuales, como visitas de páginas, excepciones o solicitudes en la web.
 - [Metrics](https://docs.microsoft.com/en-us/azure/azure-monitor/app/pre-aggregated-metrics-log-metrics): Permite la monitorización basada en métricas pre-agregadas y obtenidas desde logs.
 - [Alerts](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-metric): Permite especificar alertas basadas en umbrales sobre valores obtenidos en las métricas y búsquedas predefinidas sobre los logs
+
+# Ultimo Ejercicio: Limpieza
+Es recomendable que elimines los recursos Azure generados para evitar generar costes innecesarios.
+Para ello será suficiente con borrar el grupo de recursos con nombre `netcoredevops`.
+
