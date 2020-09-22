@@ -285,33 +285,33 @@ En nuestro proyecto crearemos una carpeta `iac` para alojar los ficheros necesar
     "parameters": {
     },
     "variables": {
-        "hostingPlanName": "netcoredevopsplan", 
+        "hostingPlanName": "netcoredevopsplan",
         "appName": "netcoredevopsapp",
-        "insightsnName": "netcoredevopsinsights",
+        "insightsName": "netcoredevopsinsights",
         "location": "[resourceGroup().location]"
     },
     "resources": [
         {
             "apiVersion": "2020-06-01",
             "name": "[variables('appName')]",
-            "type": "Microsoft.Web/sites", 
+            "type": "Microsoft.Web/sites",
             "location": "[variables('location')]",
             "tags": {},
             "dependsOn": [
-                "[concat('microsoft.insights/components/',variables('insightsnName'))]",
-                "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]" 
+                "[concat('microsoft.insights/components/',variables('insightsName'))]",
+                "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]"
             ],
             "properties": {
                 "name": "[variables('appName')]",
                 "siteConfig": {
-                    "appSettings": [                       
+                    "appSettings": [                                            
                     ],
-                     "metadata": [
+                    "metadata": [
                         {
                             "name": "CURRENT_STACK",
                             "value": "dotnetcore"
                         }
-                    ], 
+                    ],
                     "phpVersion": "OFF",
                     "alwaysOn": false
                 },
@@ -323,9 +323,9 @@ En nuestro proyecto crearemos una carpeta `iac` para alojar los ficheros necesar
             "apiVersion": "2020-06-01",
             "name": "[variables('hostingPlanName')]",
             "type": "Microsoft.Web/serverfarms",
-            "location": "[variables('location')]", 
+            "location": "[variables('location')]",
             "properties": {
-               "targetWorkerCount": "1"
+                "targetWorkerCount": "1"
             },
             "sku": {
                 "Tier": "Shared",
@@ -334,7 +334,7 @@ En nuestro proyecto crearemos una carpeta `iac` para alojar los ficheros necesar
         },
         {
             "apiVersion": "2020-02-02-preview",
-            "name": "[variables('insightsnName')]",
+            "name": "[variables('insightsName')]",
             "type": "microsoft.insights/components",
             "location": "[variables('location')]",
             "tags": {},
@@ -375,7 +375,8 @@ Le cambiaremos el nombre por `azurerm` y marcaremos el check `Grant access permi
 
 Editaremos el fichero `azure-pipelines.yml` para incluir al final un nuevo elemento `stage` con un elemento `deployment` que incluye varias tareas adicionales.
 ```
-- stage: DeployPublish
+# Deploy and Publish
+  - stage: DeployPublish
     displayName: Deploy Infra and Publish app    
     jobs:
     - deployment: DeployInfraAndPublishApp
@@ -394,7 +395,7 @@ Editaremos el fichero `azure-pipelines.yml` para incluir al final un nuevo eleme
             steps:
             - checkout: self
             - task: AzureResourceManagerTemplateDeployment@3
-              displayName: 'Ensure Azure infra using ARM Template deployment'
+              displayName: 'Deploy Azure infra using ARM Template deployment'
               inputs:
                 azureResourceManagerConnection: '${{variables.connectionName}}'
                 action: 'Create Or Update Resource Group'
@@ -402,22 +403,15 @@ Editaremos el fichero `azure-pipelines.yml` para incluir al final un nuevo eleme
                 location: $(location)
                 templateLocation: 'Linked artifact'
                 csmFile: iac/azuredeploy.json
-                deploymentMode: 'Incremental'
-            - task: DownloadPipelineArtifact@2
-              displayName: 'Download Pipeline Artifact'
-              inputs:
-                source: current
-                artifactName: demoapp
-                targetPath: '$(System.DefaultWorkingDirectory)'
+                deploymentMode: 'Incremental'            
             - task: AzureWebApp@1
               displayName: 'Azure Web App Deploy: $(webAppName)'
               inputs:
                 azureSubscription: '${{variables.connectionName}}'
                 appType: webApp
                 appName: $(webAppName)
-                package: $(System.DefaultWorkingDirectory)/**/*.zip
+                package: $(Pipeline.Workspace)/**/*.zip
                 deploymentMethod: auto
-
 ```
    > **ATENCION** a la tabulación del nuevo contenido, el nuevo elemento `stage` debe de quedar alineado verticalmente con el existente, y el resto de elementos con la identación mostrada.
  
@@ -436,5 +430,45 @@ Al haber hecho uso del elemento `deployment` en la definición de la pipeline, s
 <kbd>![Environments](https://user-images.githubusercontent.com/4158659/93873441-ff4fb680-fcd1-11ea-88c4-d1652dd65722.png)</kbd>
 
 ### Tarea 3: Habilitar Operación
+En esta última tarea habilitaremos la integración entre el App Service y el [App Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/azure-monitor-app-hub), para que todas las operaciones, indicadores y excepciones que se produzcan durante la ejecución de la aplicación sean recogidas y almacenados por el servicio de Monitorización de Azure.
 
-### Tarea 4: Habilitar Seguridad
+Para ello el servicio App Service necesita conocer el Instrumentation Key asociado al servicio App Insights, y con ello de forma automática se trazarán todos los valores obtenidos desde los contadores de rendimiento estandard del servidos y del propio servicio web, así como la informacion de las excepciones que se produzcan.
+También permite la gestion de eventos y métricas personalizados, si la aplicación está codificada para ello.
+
+El valor del Instrumentation Key necesario se puede configurar en el servicio App Service a través de dos App Settings, que pueden especificarse en tiempo de despliegue de la insfraestructura. Los valores necesarios de configurar se pueden extraer del servicio Insigths desplegado en el mismo template.  
+El fragmento a añadir es el siguiente:  
+```
+   {
+         "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+         "value": "[reference(concat('microsoft.insights/components/',variables('insightsName')), '2020-02-02-preview').InstrumentationKey]"
+   },
+   {
+         "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+         "value": "[reference(concat('microsoft.insights/components/',variables('insightsName')), '2020-02-02-preview').ConnectionString]"
+   },
+   {
+         "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+         "value": "~2"
+   }         
+```
+
+
+Y en la siguiente imagen se muestra donde debe ser insertado.
+<kbd>![Template_InstrumentationKey](https://user-images.githubusercontent.com/4158659/93896318-12be4a00-fcf1-11ea-878a-866191e3acf8.png)
+</kbd>
+
+Tras guardar y subir los cambios al repositorio, la pipeline de despliegue se lanzará de forma automática.  
+Esperaremos a que termine y comprobaremos en el Portal de Azure que se han aplicado los cambios correctamente, visualizando las propiedades del App Service, en el apartado `Application Insights`, podremos visualizar asociado el recurso con nombre `netcoredevopsinsights`, como se muestra en la imagen.
+<kbd>![Portal Insigths configured](https://user-images.githubusercontent.com/4158659/93893538-071d5400-fcee-11ea-8adf-0a4a4b7a66c4.png)</kbd>
+
+Accederemos a la URL de la aplicación web y generaremos eventos haciendo uso de TODAS las herramientas que facilita la aplicación de ejemplo utilizada.  
+A través del portal de Azure visualizaremos los valores mostrados en la App Insigths desplegada con nombre `netcoredevopsinsights` en el cuadro de mando por defecto.
+<kbd>![Portal Insigths activity](https://user-images.githubusercontent.com/4158659/93894614-34b6cd00-fcef-11ea-9efe-25d639be27f3.png)
+</kbd>
+
+Algunas opciones de interes del servicio son:
+- [Live Metrics](https://docs.microsoft.com/en-us/azure/azure-monitor/app/live-stream): Permite monitorizar en tiempo real las métricas y contadores de rendimiento de la aplicación.
+- [Failures](https://docs.microsoft.com/en-us/azure/azure-monitor/app/proactive-failure-diagnostics): Permite analizar los errores y excepciones ocurridos en la aplicación, según su tipología y la página que los ha originado.
+- [Search](https://docs.microsoft.com/en-us/azure/azure-monitor/app/diagnostic-search): Permite buscar y explorar elementos de telemetría individuales, como visitas de páginas, excepciones o solicitudes en la web.
+- [Metrics](https://docs.microsoft.com/en-us/azure/azure-monitor/app/pre-aggregated-metrics-log-metrics): Permite la monitorización basada en métricas pre-agregadas y obtenidas desde logs.
+- [Alerts](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/alerts-metric): Permite especificar alertas basadas en umbrales sobre valores obtenidos en las métricas y búsquedas predefinidas sobre los logs
