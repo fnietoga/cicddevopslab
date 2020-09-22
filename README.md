@@ -267,11 +267,171 @@ Tras guardar y subir los cambios al repositorio, podremos comprobar que la pipel
 
 **Duracion**: XX minutes
 
-El propósito de este ejercicio es ampliar la definición del proceso de compilación para que de forma automática se despliegue en un entorno de pruebas, de forma automática, la versión de la aplicación que se genera tras el proceso de compilación.
+El propósito de este ejercicio es ampliar la definición del proceso de compilación para que de forma automática se despliegue en un entorno de pruebas, de forma automática, la versión de la aplicación que se genera tras el proceso de compilación haciendo uso de infraestructura cloud para su ejecución.
 
 ### Tarea 1: Desplegar infraestructura en Azure
+El primer paso será crear un fichero de definición para la infraestructura necesaria. Para poder ejecutar nuestra aplicación de ejemplo haremos uso del servicio PaaS `Azure Functions`, que permite la ejecución de aplicaciones de distintos tipos y en varios lenguajes de programación sin requerir desplegar ninguna infraestructura de servidores, es la arquitectura conocida como `serverless`.
+
+Utilizaremos un fichero de definición ARM Template de Azure, y en el mismo incluiremos el despliegue de los siguientes servicios:
+- [Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/). Alojará y ejecutará nuestra aplicación web.
+- [Application Insigths](https://docs.microsoft.com/en-us/azure/azure-monitor/azure-monitor-app-hub). Lo utilizaremos mas adelante para monitorizar la actividad de nuestra aplicacion web.
+
+En nuestro proyecto crearemos una carpeta `iac` para alojar los ficheros necesarios para el despliegue de infraestructura, y en su interior crearemos un fichero con el nombre `azuredeploy.json`. El contenido del fichero para desplegar la infraestructura mencionada es el siguiente
+
+```
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    },
+    "variables": {
+        "hostingPlanName": "netcoredevopsplan", 
+        "appName": "netcoredevopsapp",
+        "insightsnName": "netcoredevopsinsights",
+        "location": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[variables('appName')]",
+            "type": "Microsoft.Web/sites", 
+            "location": "[variables('location')]",
+            "tags": {},
+            "dependsOn": [
+                "[concat('microsoft.insights/components/',variables('insightsnName'))]",
+                "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]" 
+            ],
+            "properties": {
+                "name": "[variables('appName')]",
+                "siteConfig": {
+                    "appSettings": [                       
+                    ],
+                     "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnetcore"
+                        }
+                    ], 
+                    "phpVersion": "OFF",
+                    "alwaysOn": false
+                },
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "clientAffinityEnabled": true
+            }
+        },
+        {
+            "apiVersion": "2020-06-01",
+            "name": "[variables('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[variables('location')]", 
+            "properties": {
+               "targetWorkerCount": "1"
+            },
+            "sku": {
+                "Tier": "Shared",
+                "Name": "D1"
+            }
+        },
+        {
+            "apiVersion": "2020-02-02-preview",
+            "name": "[variables('insightsnName')]",
+            "type": "microsoft.insights/components",
+            "location": "[variables('location')]",
+            "tags": {},
+            "properties": {
+                "Application_Type": "web",
+                "Request_Source": "IbizaWebAppExtensionCreate"
+            }
+        }
+    ]
+}
+```
+
+El template ha sido creado sin parámetros de entrada, pero si se precisara que el usuario pudiera especificar algun valor de configuración sobre los recursos desplegados, como el nombre de los mismos, simplmemente tendriamos que incorporarlos en el apartado `parameters` y posteriormente, durante el despliegue, se podrá especificar un valor. [Mas información sobre parámetros](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-parameters)
+
 
 ### Tarea 2: Despliegue Continuo desde Azure DevOps
+En esta tarea incluiremos el despliegue de la infraestructura Azure y la publicación del contenido de nuestro sitio web en la misma pipeline de despliegue que creamos anteriormente.
+
+Necesitamos crear una conexión en nuestro proyecto de Azure DevOps que nos permita interactuar con nuestra suscripción de Azure. Para simplificar el proceso haremos uso de un asistente que incluye el editor clásico que nos permite seleccionar una de nuestras suscripciones y crear de forma automática todos los recursos necesarios.
+Editaremos la pipeline que creamos en primera instancia, utilizando el editor clásico, y que quedó guardada con el nombre `netcore_devops-ASP.NET Core-CI` (o similar). Añadiremos una nueva tarea, buscando la tarea con nombre `ARM template deployment` y la añadiremos a la pipeline.
+<kbd>![ARM Template_Task](https://user-images.githubusercontent.com/4158659/93871470-fc9f9200-fcce-11ea-9862-ad7892893d4b.png)</kbd>
+
+En la nueva tarea, en el parámetro `Azure Resource Manager connection`, seleccionaremos en la lista la suscripción que utilizaremos para realizar el despliegue, y pulsaremos sobre el botón "Authorize".
+<kbd>![ARM Connection authorize](https://user-images.githubusercontent.com/4158659/93871865-9c5d2000-fccf-11ea-9774-2f713c92b31c.png)</kbd>
+
+Este proceso generará de forma automática los siguientes elementos:
+- [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals). En el Azure Active Directory asociado a la suscripción seleccionada se creará un Service Principal al que se le asignarán los permisos necesarios sobre la suscripción para el despliegue de recursos. 
+- [Azure DevOps Service Connection](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml). En el proyecto actual de Azure DevOps se creará una conexión y quedará configurada con los valores de la suscripción, y utilizando el Service Principal creado para la autenticación.
+
+Haremos unos pequeños ajustes a la conexión creada, para utilizar un nombre mas facil de recordar, y para permitir su uso por las distintas pipelines que creemos sin necesidad de autorizar expresamente.
+En el apartado `Project Settings` de nuestro proyecto, accederemos al elemento `Service connections` y editaremos la conexión.
+<kbd>![Service Connection Edit](https://user-images.githubusercontent.com/4158659/93872261-2e652880-fcd0-11ea-83ed-b0c1c51e9e1c.png)</kbd>
+
+Le cambiaremos el nombre por `azurerm` y marcaremos el check `Grant access permission to all pipelines`, guardando los cambios. 
+<kbd>![Service Connection Grant](https://user-images.githubusercontent.com/4158659/93872460-7f751c80-fcd0-11ea-9c63-7c5ef428fe98.png)</kbd>
+
+Editaremos el fichero `azure-pipelines.yml` para incluir al final un nuevo elemento `stage` con un elemento `deployment` que incluye varias tareas adicionales.
+```
+- stage: DeployPublish
+    displayName: Deploy Infra and Publish app    
+    jobs:
+    - deployment: DeployInfraAndPublishApp
+      displayName: 'Deploy infra to Azure and Publish App'
+      workspace:
+        clean: all
+      environment: demoapp-dev
+      variables:
+        resourceGroupName: netcoredevops
+        webAppName: netcoredevopsapp
+        location: 'West Europe'
+        connectionName: 'azurerm'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: self
+            - task: AzureResourceManagerTemplateDeployment@3
+              displayName: 'Ensure Azure infra using ARM Template deployment'
+              inputs:
+                azureResourceManagerConnection: '${{variables.connectionName}}'
+                action: 'Create Or Update Resource Group'
+                resourceGroupName: $(resourceGroupName)
+                location: $(location)
+                templateLocation: 'Linked artifact'
+                csmFile: iac/azuredeploy.json
+                deploymentMode: 'Incremental'
+            - task: DownloadPipelineArtifact@2
+              displayName: 'Download Pipeline Artifact'
+              inputs:
+                source: current
+                artifactName: demoapp
+                targetPath: '$(System.DefaultWorkingDirectory)'
+            - task: AzureWebApp@1
+              displayName: 'Azure Web App Deploy: $(webAppName)'
+              inputs:
+                azureSubscription: '${{variables.connectionName}}'
+                appType: webApp
+                appName: $(webAppName)
+                package: $(System.DefaultWorkingDirectory)/**/*.zip
+                deploymentMethod: auto
+
+```
+   > **ATENCION** a la tabulación del nuevo contenido, el nuevo elemento `stage` debe de quedar alineado verticalmente con el existente, y el resto de elementos con la identación mostrada.
+ 
+Prepararemos un commit & push de nuestros cambios, para subirlos al repositorio remoto, y observaremos como nuestra pipeline comienza a ejecutarse de forma automática.
+
+Al finalizar observaremos en el Portal de Azure que nuestros recursos han quedado perfectamente desplegados.
+<kbd>![Portal Azure](https://user-images.githubusercontent.com/4158659/93872913-21950480-fcd1-11ea-965b-757313f8dc6c.png)</kbd>
+
+Y si accedemos a la URL del App Service nuestra aplicación se mostrará correctamente.
+<kbd>![App Service Url](https://user-images.githubusercontent.com/4158659/93873019-4f7a4900-fcd1-11ea-9e7d-6b531653e991.png)</kbd>
+
+Con estos cambios, cada vez que se realice un cambio por parte del equipo de desarrollo sobre el codigo de la aplicación, se compilará y desplegará de forma automática la nueva version sobre el entorno de desarrollo, lo que se denomina "Despliegue Continuo"
+
+
+Al haber hecho uso del elemento `deployment` en la definición de la pipeline, se habrá creado de forma automática un elemento en la seccion `Environments` de Azure DevOps, donde podremos visualizar el historia de despliegues sobre nuestra infraestructura de desarrollo, contando con la trazabilidad de las distintas versiones desplegadas.
+<kbd>![Environments](https://user-images.githubusercontent.com/4158659/93873441-ff4fb680-fcd1-11ea-88c4-d1652dd65722.png)</kbd>
 
 ### Tarea 3: Habilitar Operación
 
