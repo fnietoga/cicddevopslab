@@ -353,18 +353,20 @@ El template ha sido creado sin parámetros de entrada, pero si se precisara que 
 ### Tarea 2: Despliegue Continuo desde Azure DevOps
 En esta tarea incluiremos el despliegue de la infraestructura Azure y la publicación del contenido de nuestro sitio web en la misma pipeline de despliegue que creamos anteriormente.
 
-Necesitamos crear una conexión en nuestro proyecto de Azure DevOps que nos permita interactuar con nuestra suscripción de Azure. Para simplificar el proceso haremos uso de un asistente que incluye el editor clásico que nos permite seleccionar una de nuestras suscripciones y crear de forma automática todos los recursos necesarios.
-Editaremos la pipeline que creamos en primera instancia, utilizando el editor clásico, y que quedó guardada con el nombre `netcore_devops-ASP.NET Core-CI` (o similar). Añadiremos una nueva tarea, buscando la tarea con nombre `ARM template deployment` y la añadiremos a la pipeline.
+Necesitamos crear una conexión en nuestro proyecto de Azure DevOps que nos permita interactuar con nuestra suscripción de Azure.  
+Para simplificar el proceso haremos uso de un asistente que incluye el editor clásico que nos permite seleccionar una de nuestras suscripciones y crear de forma automática todos los recursos necesarios.  
+Editaremos la pipeline que creamos en primera instancia, utilizando el editor clásico, y que quedó guardada con el nombre `netcore_devops-ASP.NET Core-CI` (o similar).  
+Añadiremos una nueva tarea, buscando la tarea con nombre `ARM template deployment` y la añadiremos a la pipeline.
 <kbd>![ARM Template_Task](https://user-images.githubusercontent.com/4158659/93871470-fc9f9200-fcce-11ea-9862-ad7892893d4b.png)</kbd>
 
-En la nueva tarea, en el parámetro `Azure Resource Manager connection`, seleccionaremos en la lista la suscripción que utilizaremos para realizar el despliegue, y pulsaremos sobre el botón "Authorize".
+En la nueva tarea, en el parámetro `Azure Resource Manager connection`, seleccionaremos en la lista la suscripción que utilizaremos para realizar el despliegue, y pulsaremos sobre el botón "Authorize".  
 <kbd>![ARM Connection authorize](https://user-images.githubusercontent.com/4158659/93871865-9c5d2000-fccf-11ea-9774-2f713c92b31c.png)</kbd>
 
 Este proceso generará de forma automática los siguientes elementos:
 - [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals). En el Azure Active Directory asociado a la suscripción seleccionada se creará un Service Principal al que se le asignarán los permisos necesarios sobre la suscripción para el despliegue de recursos. 
 - [Azure DevOps Service Connection](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml). En el proyecto actual de Azure DevOps se creará una conexión y quedará configurada con los valores de la suscripción, y utilizando el Service Principal creado para la autenticación.
 
-Haremos unos pequeños ajustes a la conexión creada, para utilizar un nombre mas facil de recordar, y para permitir su uso por las distintas pipelines que creemos sin necesidad de autorizar expresamente.
+Haremos unos pequeños ajustes a la conexión creada, para utilizar un nombre mas facil de recordar, y para permitir su uso por las distintas pipelines que creemos sin necesidad de autorizar expresamente.  
 En el apartado `Project Settings` de nuestro proyecto, accederemos al elemento `Service connections` y editaremos la conexión.
 <kbd>![Service Connection Edit](https://user-images.githubusercontent.com/4158659/93872261-2e652880-fcd0-11ea-83ed-b0c1c51e9e1c.png)</kbd>
 
