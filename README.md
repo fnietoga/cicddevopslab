@@ -3,25 +3,26 @@ La finalidad de este laboratorio sobre DevOps es la practica sobre los procesos 
 
 Se utilizará como base para las prácticas el código fuente de la aplicación de ejemplo creada por Ben Coleman y disponible en el [este repositorio GutHub](https://github.com/benc-uk/dotnet-demoapp). 
 
-Esta aplicación permite monitorizar en tiempo real los recursos de CPU y memoria utilizados por la aplicación, así como forzar el uso de recursos y lanzar excepciones que serán recogidas por aplicaciones de monitorización, como App Insights.
+Esta aplicación web de ejemplo permite monitorizar en tiempo real los recursos de CPU y memoria utilizados por la aplicación, así como forzar el uso de recursos y lanzar excepciones que serán recogidas por aplicaciones de monitorización, como App Insights.
 
 ## Requisitos
 1. Una suscripción de Azure, de pago por uso, MSDN o Trial.
-   - Para completar este laboratorio, asegúrate de que tu cuenta tenga los siguientes roles:
+   - Para completar este laboratorio, asegúrate de que tu cuenta tenga los siguientes roles y permisos:
      - El rol [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) para la suscripción que vayas a utilizar.
-     - Eres un usuario [Miembro](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/users-default-permissions#member-and-guest-users) del directorio Azure AD que vayas a utilizar. (Los usuarios invitados no tendrán los permisos necesarios).
-     - No tienes restringida la creación de Aplicaciones Azure AD. Es posible que el administrador del Directorio Azure AD lo haya limitado.  
+     - Ser un usuario [Miembro](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/users-default-permissions#member-and-guest-users) del directorio Azure AD que vayas a utilizar. (Los usuarios invitados no tendrán los permisos necesarios).
+     - No tener restringida la creación de Aplicaciones Azure AD. Es posible que el administrador del Directorio Azure AD lo haya limitado.  
 
      > **Nota** Si no cumples estos requisitos, es posible que tengas que pedir a otro usuario miembro con derechos de propietario de suscripción que inicie sesión en el portal y ejecute con antelación el paso de creacion de la aplicación Azure AD.
   
 2. Máquina local o una máquina virtual (Windows o Linux) configurada con:
    - Un navegador, preferiblemente Chrome o Microsoft Edge.
    - [dotnet core sdk](https://dotnet.microsoft.com/download) instalado, para las pruebas de compilación y ejecucion locales.
+   - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) para la ejecución de algunos comandos en Azure. 
    - [Visual Studio Code](https://code.visualstudio.com/download) o cualquier otro IDE o editor.
 
 # Ejercicio 1: Ejecutar localmente
 
-**Duracion**: XX minutes
+**Duracion**: 10 minutes
 
 Como primer ejercicio probaremos a ejecutar la aplicación de forma local, para comprobar su correcto funcionamiento y familiarizarnos con la la funcionalidad que nos ofrece.
 
@@ -62,7 +63,7 @@ Probaremos la opciones de la aplicación:
 
 # Ejercicio 2: Integración Continua con Azure DevOps
 
-**Duracion**: XX minutes
+**Duracion**: 20 minutes
 
 El propósito de este ejercicio es familiarizarnos con las principales opciones de Azure DevOps y preparar el entorno para qie se realice un proceso de compilacion de forma automática cada vez que se sube un cambio en el codigo fuente por algun desarrollador.
 
@@ -120,7 +121,9 @@ La primera acción que tenemos que realizar sobre nuestro proyecto de DevOps en 
    ```
 
 5. Configuraremos el repositorio remoto de git, apuntando al repositorio en nuestro proyecto de Azure DevOps
-   - Primero copiaremos la URL de nuestro repositorio
+   - Antes de continuar, y para simplificar la autenticación con el repositorio Git, pulsaremos sobre el botón `Generate Git Credential`, y copiaremos el Personal Access Token generado, almacenándolo para su uso posterior.
+      <kbd>![Repository_GenerateCredentials](https://user-images.githubusercontent.com/4158659/93901904-4a2ff500-fcf7-11ea-9874-eae4e06c1423.png)</kbd>  
+   - A continuación copiaremos la URL de nuestro repositorio
       <kbd>![screen](https://user-images.githubusercontent.com/4158659/93192713-4116b500-f746-11ea-9b6a-9cbf44146dbd.png)</kbd>  
 
    - Y ejecutaremos el siguiente comando para configurarlo como repositorio remoto (sustituyendo la url del repositorio por la copiada en el punto anterior).
@@ -133,6 +136,7 @@ La primera acción que tenemos que realizar sobre nuestro proyecto de DevOps en 
    ```
    git push -u origin master
    ```
+   > **Nota** La primera vez que subamos cambios al repositorio remoto nos solicitará credenciales, y podremos utilizar como password el Personal Access Token generado anteriormente.
 
 7. Por ultimo, comprobaremos a través del navegador que los ficheros se han subido correctamente a nuestro repositorio en DevOps.
    <kbd>![screen](https://user-images.githubusercontent.com/4158659/93192756-4d9b0d80-f746-11ea-87da-70fe654c691d.png)</kbd>  
@@ -229,7 +233,7 @@ stages:
 Grabaremos nuestro fichero de definición y haremos commit y push al repositorio de código remoto.
 <kbd>![git commit and push](https://user-images.githubusercontent.com/4158659/93790197-0d9ac580-fc33-11ea-8e96-2c53892bd76e.png)</kbd>
 
-Desde la interfaz web, al visualizar nuestro repositorio, tendremos habilitado el botón "Set up build",
+Desde la interfaz web, al visualizar nuestro repositorio, visualizaremos el nuevo fichero subido, y tendremos habilitado el botón "Set up build",
 <kbd>![Set up build](https://user-images.githubusercontent.com/4158659/93790206-1095b600-fc33-11ea-9289-452aac30e2f0.png)</kbd>
 
 
@@ -240,7 +244,7 @@ Podremos visualizar el proceso de ejecución del proceso de compilación, con lo
 
 
 ### Tarea 4: Probar integración continua
-El proceso de integracioó continua consiste en que los procesos de compilación y pruebas unitarias se ejecuten tras cada nuevo commit de cambios sobre la rama de código, para permitir comprobar que los nuevos cambios realizados se integran con el resto del código existente sin provocar errores, y que se mantiene la retro-compatibilidad con las versiones anteriores, al ejecutarse las tests sin errores.
+El proceso de integración continua consiste en que las tareas de compilación y pruebas unitarias se ejecuten tras cada nuevo commit de cambios sobre la rama de código, para permitir comprobar que los nuevos cambios realizados se integran con el resto del código existente sin provocar errores, y que se mantiene la retro-compatibilidad con las versiones anteriores, al ejecutarse las tests sin errores.
 
 Para activarla en nuestra pipeline unicamente tendremos que incluir un pequeño fragmento en su archivo de definición, para habilitar un `disparador` que esté atento ante cualquier cambio en el repositorio de código, en las ramas que indiquemos, pudiendo utilizar caracteres comodín. 
 
@@ -265,18 +269,18 @@ Tras guardar y subir los cambios al repositorio, podremos comprobar que la pipel
 
 # Ejercicio 3: Despliegue Continuo
 
-**Duracion**: XX minutes
+**Duracion**: 30 minutes
 
 El propósito de este ejercicio es ampliar la definición del proceso de compilación para que de forma automática se despliegue en un entorno de pruebas, de forma automática, la versión de la aplicación que se genera tras el proceso de compilación haciendo uso de infraestructura cloud para su ejecución.
 
 ### Tarea 1: Desplegar infraestructura en Azure
-El primer paso será crear un fichero de definición para la infraestructura necesaria. Para poder ejecutar nuestra aplicación de ejemplo haremos uso del servicio PaaS `Azure Functions`, que permite la ejecución de aplicaciones de distintos tipos y en varios lenguajes de programación sin requerir desplegar ninguna infraestructura de servidores, es la arquitectura conocida como `serverless`.
+El primer paso será crear un fichero de definición para la infraestructura necesaria. Para poder ejecutar nuestra aplicación de ejemplo haremos uso del servicio PaaS `Azure App Service`, que permite la ejecución de aplicaciones de distintos tipos y en varios lenguajes de programación sin requerir desplegar ninguna infraestructura de servidores, es la arquitectura conocida como `serverless`.
 
 Utilizaremos un fichero de definición ARM Template de Azure, y en el mismo incluiremos el despliegue de los siguientes servicios:
 - [Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/). Alojará y ejecutará nuestra aplicación web.
 - [Application Insigths](https://docs.microsoft.com/en-us/azure/azure-monitor/azure-monitor-app-hub). Lo utilizaremos mas adelante para monitorizar la actividad de nuestra aplicacion web.
 
-En nuestro proyecto crearemos una carpeta `iac` para alojar los ficheros necesarios para el despliegue de infraestructura, y en su interior crearemos un fichero con el nombre `azuredeploy.json`. El contenido del fichero para desplegar la infraestructura mencionada es el siguiente
+En nuestro proyecto local crearemos una carpeta `iac` para alojar los ficheros necesarios para el despliegue de infraestructura, y en su interior crearemos un fichero con el nombre `azuredeploy.json`. El contenido del fichero para desplegar la infraestructura mencionada es el siguiente
 
 ```
 {
@@ -362,6 +366,9 @@ Añadiremos una nueva tarea, buscando la tarea con nombre `ARM template deployme
 En la nueva tarea, en el parámetro `Azure Resource Manager connection`, seleccionaremos en la lista la suscripción que utilizaremos para realizar el despliegue, y pulsaremos sobre el botón "Authorize".  
 <kbd>![ARM Connection authorize](https://user-images.githubusercontent.com/4158659/93871865-9c5d2000-fccf-11ea-9774-2f713c92b31c.png)</kbd>
 
+El asistente nos pedirá las credenciales que se utilizarán para el proceso de creación y configuración de los elementos Azure y Azure AD necesarios.
+Tras finalizar el asistente de autorización, podremos descartar los cambios sobre la pipeline.
+
 Este proceso generará de forma automática los siguientes elementos:
 - [Azure Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals). En el Azure Active Directory asociado a la suscripción seleccionada se creará un Service Principal al que se le asignarán el rol [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) sobre la suscripción para permitir el despliegue de recursos. 
 - [Azure DevOps Service Connection](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml). En el proyecto actual de Azure DevOps se creará una conexión y quedará configurada con los valores de la suscripción, y utilizando el Service Principal creado para la autenticación.
@@ -415,9 +422,9 @@ Editaremos el fichero `azure-pipelines.yml` para incluir al final un nuevo eleme
 ```
    > **ATENCION** a la tabulación del nuevo contenido, el nuevo elemento `stage` debe de quedar alineado verticalmente con el existente, y el resto de elementos con la identación mostrada.
  
-Prepararemos un commit & push de nuestros cambios, para subirlos al repositorio remoto, y observaremos como nuestra pipeline comienza a ejecutarse de forma automática.
+Prepararemos un commit & push de nuestros cambios, para subirlos al repositorio remoto, y observaremos como nuestra pipeline comienza a ejecutarse de forma automática. Esperaremos a que finalice su ejecución.  
 
-Al finalizar observaremos en el Portal de Azure que nuestros recursos han quedado perfectamente desplegados.
+Al finalizar observaremos en el [Portal de Azure](https://portal.azure.com/) que nuestros recursos han quedado perfectamente desplegados.
 <kbd>![Portal Azure](https://user-images.githubusercontent.com/4158659/93872913-21950480-fcd1-11ea-965b-757313f8dc6c.png)</kbd>
 
 Y si accedemos a la URL del App Service nuestra aplicación se mostrará correctamente.
@@ -435,7 +442,7 @@ En esta última tarea habilitaremos la integración entre el App Service y el [A
 Para ello el servicio App Service necesita conocer el Instrumentation Key asociado al servicio App Insights, y con ello de forma automática se trazarán todos los valores obtenidos desde los contadores de rendimiento estandard del servidos y del propio servicio web, así como la informacion de las excepciones que se produzcan.
 También permite la gestion de eventos y métricas personalizados, si la aplicación está codificada para ello.
 
-El valor del Instrumentation Key necesario se puede configurar en el servicio App Service a través de dos App Settings, que pueden especificarse en tiempo de despliegue de la insfraestructura. Los valores necesarios de configurar se pueden extraer del servicio Insigths desplegado en el mismo template.  
+El valor del Instrumentation Key necesario se puede configurar en el servicio App Service a través de dos App Settings, que pueden especificarse en tiempo de despliegue de la insfraestructura. Los valores necesarios de configurar se pueden extraer del servicio Insigths desplegado en el mismo ARM template. Incluiremos el siguiente fragmento en el fichero `azuredeploy.json`.
 El fragmento a añadir es el siguiente:  
 ```
    {
