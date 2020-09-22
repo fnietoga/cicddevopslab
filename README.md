@@ -370,7 +370,7 @@ Haremos unos pequeños ajustes a la conexión creada, para utilizar un nombre ma
 En el apartado `Project Settings` de nuestro proyecto, accederemos al elemento `Service connections` y editaremos la conexión.
 <kbd>![Service Connection Edit](https://user-images.githubusercontent.com/4158659/93872261-2e652880-fcd0-11ea-83ed-b0c1c51e9e1c.png)</kbd>
 
-Le cambiaremos el nombre por `azurerm` y marcaremos el check `Grant access permission to all pipelines`, guardando los cambios. 
+Le cambiaremos el nombre por `azurerm` y marcaremos el check `Grant access permission to all pipelines`, guardando los cambios.  
 <kbd>![Service Connection Grant](https://user-images.githubusercontent.com/4158659/93872460-7f751c80-fcd0-11ea-9c63-7c5ef428fe98.png)</kbd>
 
 Editaremos el fichero `azure-pipelines.yml` para incluir al final un nuevo elemento `stage` con un elemento `deployment` que incluye varias tareas adicionales.
