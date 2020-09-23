@@ -1,4 +1,4 @@
-# .NET Core - DevOps Lab
+# CI/CD con Azure DevOps
 La finalidad de este laboratorio sobre DevOps es la practica sobre los procesos de Integración Contínua (CI) y Despliegue Continuo (CD) utilizando las funcionalidades ofrecidas por la herramienta Azure DevOps.
 
 Se utilizará como base para las prácticas el código fuente de la aplicación de ejemplo creada por Ben Coleman y disponible en el [este repositorio GutHub](https://github.com/benc-uk/dotnet-demoapp). 
