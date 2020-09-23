@@ -1,4 +1,4 @@
-# CI/CD con Azure DevOps
+# CI/CD con Azure DevOps Lab
 La finalidad de este laboratorio sobre DevOps es la practica sobre los procesos de Integración Contínua (CI) y Despliegue Continuo (CD) utilizando las funcionalidades ofrecidas por la herramienta Azure DevOps.
 
 Se utilizará como base para las prácticas el código fuente de la aplicación de ejemplo creada por Ben Coleman y disponible en el [este repositorio GutHub](https://github.com/benc-uk/dotnet-demoapp). 
@@ -484,3 +484,5 @@ Algunas opciones de interes del servicio son:
 Es recomendable que elimines los recursos Azure generados para evitar generar costes innecesarios.
 Para ello será suficiente con borrar el grupo de recursos con nombre `netcoredevops`.
 
+# Ayúdanos a mejorar
+Con la única finalidad de conocer tu opinión sobre este laboratorio y poder generar mas contenidos que se adapten a vuestras necesidades de formación e inquietudes tecnológicas, te pedimos que rellenes esta [breve encuesta anónima](https://forms.office.com/Pages/ResponsePage.aspx?id=KwcNNUnY902Tv9VZNVaFHd8wREGDZNxHtUeYg-i5ZI1UNlgzU1FKSDU3RlNPNjJPSlpYOEU4QTc2My4u). 
